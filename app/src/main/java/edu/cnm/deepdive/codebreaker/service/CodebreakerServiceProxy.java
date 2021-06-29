@@ -2,6 +2,7 @@ package edu.cnm.deepdive.codebreaker.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.cnm.deepdive.codebreaker.BuildConfig;
 import edu.cnm.deepdive.codebreaker.model.Game;
 import edu.cnm.deepdive.codebreaker.model.Guess;
 import io.reactivex.Single;
@@ -74,7 +75,7 @@ public interface CodebreakerServiceProxy {
           .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
           .create();
       HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-      interceptor.setLevel(Level.NONE);
+      interceptor.setLevel(BuildConfig.DEBUG ? Level.BODY : Level.NONE);
       OkHttpClient client = new OkHttpClient.Builder()
           .addInterceptor(interceptor)
           .build();
