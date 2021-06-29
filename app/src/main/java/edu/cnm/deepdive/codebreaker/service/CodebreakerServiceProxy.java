@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import edu.cnm.deepdive.codebreaker.model.Game;
 import edu.cnm.deepdive.codebreaker.model.Guess;
 import io.reactivex.Single;
+import java.util.List;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
@@ -39,6 +40,9 @@ public interface CodebreakerServiceProxy {
 
   @POST("codes/{id}/guesses")
   Single<Guess> submitGuess(@Path("id") String id, @Body Guess guess);
+
+  @GET("codes/{id}/guesses")
+  Single<List<Guess>> getGuesses(@Path("id") String id);
 
   static CodebreakerServiceProxy getInstance() {
     return InstanceHolder.INSTANCE;
