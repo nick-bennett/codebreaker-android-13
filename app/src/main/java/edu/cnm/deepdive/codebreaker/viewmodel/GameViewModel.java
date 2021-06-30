@@ -27,6 +27,7 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
     game = new MutableLiveData<>();
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
+    startGame();
   }
 
   public LiveData<Game> getGame() {
@@ -38,11 +39,25 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
   }
   
   public void startGame() {
+    throwable.setValue(null);
     pending.add(
         repository
             .create("ABCDEF", 3)
             .subscribe(
                 game::postValue,
+                this::handleThrowable
+            )
+    );
+  }
+
+  public void submitGuess(String text) {
+    throwable.setValue(null);
+    //noinspection ConstantConditions
+    pending.add(
+        repository
+            .addGuess(game.getValue(), text)
+            .subscribe(
+                (guess) -> {},
                 this::handleThrowable
             )
     );

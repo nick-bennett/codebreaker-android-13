@@ -33,10 +33,9 @@ public class MainActivity extends AppCompatActivity {
       if (throwable != null) {
         //noinspection ConstantConditions
         Snackbar.make(findViewById(R.id.container), throwable.getMessage(),
-            Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.LENGTH_LONG).show();
       }
     });
-    viewModel.startGame();
   }
 
 }
