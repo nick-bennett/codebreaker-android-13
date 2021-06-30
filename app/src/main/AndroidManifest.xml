@@ -15,7 +15,7 @@
     android:theme="@style/Theme.Codebreaker">
 
     <activity
-      android:label="@string/title_activity_main"
+      android:label="@string/app_name"
       android:name=".controller.MainActivity">
 
       <intent-filter>
@@ -23,13 +23,6 @@
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
-
-    </activity>
-
-    <activity
-      android:label="@string/app_name"
-      android:name=".controller.OldMainActivity"
-      android:theme="@style/Theme.Codebreaker.NoActionBar">
 
     </activity>
 
