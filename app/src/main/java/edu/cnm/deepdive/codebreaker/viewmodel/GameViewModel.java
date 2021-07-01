@@ -57,7 +57,7 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
         repository
             .addGuess(game.getValue(), text)
             .subscribe(
-                (guess) -> {},
+                game::postValue,
                 this::handleThrowable
             )
     );
