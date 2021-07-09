@@ -11,5 +11,6 @@
 
   <string name="code_length_pref_key">code_length_preference</string>
   <string name="code_length_pref_title">Code length</string>
+  <string name="new_game_title">New game</string>
 
 </resources>
