@@ -2,13 +2,19 @@ package edu.cnm.deepdive.codebreaker.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import java.util.Date;
 
-@Entity(tableName = "completed_game")
+@Entity(
+    tableName = "completed_game",
+    indices = {
+        @Index(value = {"service_key"}, unique = true)
+    }
+)
 public class CompletedGame {
 
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   @ColumnInfo(name = "completed_game_id")
   private long id;
 
