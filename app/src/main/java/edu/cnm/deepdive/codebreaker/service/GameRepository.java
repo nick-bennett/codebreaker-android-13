@@ -1,11 +1,9 @@
 package edu.cnm.deepdive.codebreaker.service;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import edu.cnm.deepdive.codebreaker.model.Game;
-import edu.cnm.deepdive.codebreaker.model.Guess;
+import edu.cnm.deepdive.codebreaker.model.dto.Game;
+import edu.cnm.deepdive.codebreaker.model.dto.Guess;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class GameRepository {
