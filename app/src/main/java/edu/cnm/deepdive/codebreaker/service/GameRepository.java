@@ -51,7 +51,7 @@ public class GameRepository {
             completedGame.setCompleted(completedGuess.getCreated());
             completedGame.setAttempts(game.getGuesses().size() + 1);
             completedGame.setCodeLength(game.getLength());
-            completedGame.setPoolSize(game.getPool().length());
+            completedGame.setPoolSize((int) game.getPool().codePoints().count());
             return completedGameDao
                 .insert(completedGame)
                 .map((id) -> completedGuess);
@@ -61,6 +61,7 @@ public class GameRepository {
         })
         .map((completedGuess) -> {
           game.getGuesses().add(completedGuess);
+          game.setGuessCount(game.getGuessCount() + 1);
           game.setSolved(completedGuess.isSolution());
           return game;
         })
