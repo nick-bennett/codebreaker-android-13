@@ -1,76 +1,88 @@
 package edu.cnm.deepdive.codebreaker.service;
 
 import android.content.Context;
-import edu.cnm.deepdive.codebreaker.model.dao.CompletedGameDao;
+import androidx.lifecycle.LiveData;
+import edu.cnm.deepdive.codebreaker.model.dao.GameDao;
+import edu.cnm.deepdive.codebreaker.model.dao.GuessDao;
 import edu.cnm.deepdive.codebreaker.model.entity.Game;
 import edu.cnm.deepdive.codebreaker.model.entity.Guess;
-import edu.cnm.deepdive.codebreaker.model.entity.CompletedGame;
+import edu.cnm.deepdive.codebreaker.model.pojo.GameWithGuesses;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import java.util.List;
 
 public class GameRepository {
 
   private final CodebreakerServiceProxy proxy;
   private final Context context;
-  private final CompletedGameDao completedGameDao;
-  // TODO Add fields for GameDao and GuessDao.
+  private final GameDao gameDao;
+  private final GuessDao guessDao;
 
   public GameRepository(Context context) {
     this.context = context;
     proxy = CodebreakerServiceProxy.getInstance();
-    completedGameDao = CodebreakerDatabase.getInstance().getCompletedGameDao();
-    // TODO Initialize fields for GameDao and GuessDao.
+    CodebreakerDatabase database = CodebreakerDatabase.getInstance();
+    gameDao = database.getGameDao();
+    guessDao = database.getGuessDao();
   }
 
-  // TODO Modify to write Game to database after receiving from server.
-  public Single<Game> create(String pool, int length) {
-    Game gameStub = new Game();
-    gameStub.setPool(pool);
-    gameStub.setLength(length);
-    return proxy.startGame(gameStub)
+  public Single<Game> save(Game game) {
+    return (
+        (game.getId() == 0)
+            ? proxy
+                .startGame(game)
+                .flatMap((receivedGame) -> {
+                  receivedGame.setPoolSize((int) receivedGame.getPool().codePoints().count());
+                  return gameDao
+                      .insert(receivedGame)
+                      .map((id) -> {
+                        receivedGame.setId(id);
+                        return receivedGame;
+                      });
+                })
+            : gameDao
+                .update(game)
+                .map((count) -> game)
+    )
         .subscribeOn(Schedulers.io());
   }
 
-  // TODO Simplify by using GameWithGuesses POJO.
-  public Single<Game> get(String id) {
-    return proxy.getGame(id)
-        .flatMap((game) -> proxy.getGuesses(game.getServiceKey())
-            .map((guesses) -> {
-              game.getGuesses().addAll(guesses);
-              return game;
-            }))
+  public LiveData<GameWithGuesses> get(long id) {
+    return gameDao.select(id);
+  }
+
+  public Single<Game> save(Game game, Guess guess) {
+    return (
+        (guess.getId() == 0)
+            ? proxy
+                .submitGuess(game.getServiceKey(), guess)
+                .map((receivedGuess) -> {
+                  receivedGuess.setGameId(game.getId());
+                  return receivedGuess;
+                })
+                .flatMap(guessDao::insert)
+                .map((id) -> game)
+            : guessDao
+                .update(guess)
+                .map((count) -> game)
+    )
         .subscribeOn(Schedulers.io());
   }
 
-  // TODO Write to database after receiving Guess from server.
-  public Single<Game> addGuess(Game game, String text) {
-    Guess guess = new Guess();
-    guess.setText(text);
-    return proxy
-        .submitGuess(game.getServiceKey(), guess)
-        .flatMap((completedGuess) -> {
-          if (completedGuess.isSolution()) {
-            CompletedGame completedGame = new CompletedGame();
-            completedGame.setServiceKey(game.getServiceKey());
-            completedGame.setStarted(game.getCreated());
-            completedGame.setCompleted(completedGuess.getCreated());
-            completedGame.setAttempts(game.getGuesses().size() + 1);
-            completedGame.setCodeLength(game.getLength());
-            completedGame.setPoolSize((int) game.getPool().codePoints().count());
-            return completedGameDao
-                .insert(completedGame)
-                .map((id) -> completedGuess);
-          } else {
-            return Single.just(completedGuess);
-          }
-        })
-        .map((completedGuess) -> {
-          game.getGuesses().add(completedGuess);
-          game.setGuessCount(game.getGuessCount() + 1);
-          game.setSolved(completedGuess.isSolution());
-          return game;
-        })
+  public Completable remove(Game game) {
+    return (
+        (game.getId() == 0)
+            ? Completable.complete()
+            : gameDao
+                .delete(game)
+                .ignoreElement()
+    )
         .subscribeOn(Schedulers.io());
+  }
+
+  public LiveData<List<GameWithGuesses>> getScoreboard(int codeLength, int poolSize) {
+    return gameDao.selectTopScores(codeLength, poolSize);
   }
 
 }
