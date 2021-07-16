@@ -16,6 +16,10 @@
   <string name="pool_size_pref_title">Pool size</string>
 
   <string name="new_game_title">New game</string>
+  <string name="code_length_label">Code length</string>
+  <string name="pool_size_label">Pool size</string>
+  <string name="date_completed_header">Date completed</string>
+  <string name="attempts_header">Attempts</string>
 
   <string-array name="emojis">
     <item>&#x1f600;</item> <!-- grinning face -->
