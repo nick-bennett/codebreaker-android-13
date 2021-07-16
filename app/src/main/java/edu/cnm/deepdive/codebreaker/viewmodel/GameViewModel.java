@@ -40,17 +40,17 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
 
   public GameViewModel(@NonNull Application application) {
     super(application);
+    preferences = PreferenceManager.getDefaultSharedPreferences(application);
     repository = new GameRepository(application);
     gameId = new MutableLiveData<>();
     game = Transformations.switchMap(gameId, repository::get);
-    codeLength = new MutableLiveData<>();
-    poolSize = new MutableLiveData<>();
+    codeLength = new MutableLiveData<>(getCodeLengthPref());
+    poolSize = new MutableLiveData<>(getPoolSizePref());
     ScoreboardFilterLiveData trigger = new ScoreboardFilterLiveData(codeLength, poolSize);
     scoreboard = Transformations.switchMap(trigger, (pair) ->
         repository.getScoreboard(pair.first, pair.second));
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
-    preferences = PreferenceManager.getDefaultSharedPreferences(application);
     String[] emojis = application.getResources().getStringArray(R.array.emojis);
     StringBuilder builder  = new StringBuilder();
     for (String emoji : emojis) {
@@ -62,6 +62,26 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
 
   public LiveData<GameWithGuesses> getGame() {
     return game;
+  }
+
+  public LiveData<Integer> getCodeLength() {
+    return codeLength;
+  }
+
+  public void setCodeLength(int codeLength) {
+    this.codeLength.setValue(codeLength);
+  }
+
+  public LiveData<Integer> getPoolSize() {
+    return poolSize;
+  }
+
+  public void setPoolSize(int poolSize) {
+    this.poolSize.setValue(poolSize);
+  }
+
+  public LiveData<List<GameWithGuesses>> getScoreboard() {
+    return scoreboard;
   }
 
   public LiveData<Throwable> getThrowable() {
@@ -114,13 +134,16 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
         res.getInteger(R.integer.code_length_pref_default));
   }
 
-  private String getPoolPref() {
+  private int getPoolSizePref() {
     Resources res = getApplication().getResources();
-    int poolSizePref = preferences.getInt(res.getString(R.string.pool_size_pref_key),
+    return preferences.getInt(res.getString(R.string.pool_size_pref_key),
         res.getInteger(R.integer.pool_size_pref_default));
+  }
+
+  private String getPoolPref() {
     return basePool
         .codePoints()
-        .limit(poolSizePref)
+        .limit(getPoolSizePref())
         .mapToObj((codePoint) -> new String(new int[]{codePoint}, 0, 1))
         .collect(Collectors.joining());
   }
