@@ -40,7 +40,8 @@ public abstract class CodebreakerDatabase extends RoomDatabase {
   private static class InstanceHolder {
 
     private static final CodebreakerDatabase INSTANCE =
-        Room.databaseBuilder(context, CodebreakerDatabase.class, DB_NAME)
+        Room
+            .databaseBuilder(context, CodebreakerDatabase.class, DB_NAME)
             .build();
 
   }
@@ -48,12 +49,12 @@ public abstract class CodebreakerDatabase extends RoomDatabase {
   public static class Converters {
 
     @TypeConverter
-    public static Long dateToLong(Date value) {
+    public static Long toLong(Date value) {
       return (value != null) ? value.getTime() : null;
     }
 
     @TypeConverter
-    public static Date longToDate(Long value) {
+    public static Date toDate(Long value) {
       return (value != null) ? new Date(value) : null;
     }
 
