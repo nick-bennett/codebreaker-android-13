@@ -19,9 +19,13 @@
   <string name="code_length_label">Code length</string>
   <string name="pool_size_label">Pool size</string>
   <string name="date_completed_header">Date completed</string>
-  <string name="attempts_header">Attempts</string>
+  <string name="unselected_attempts_header">Attempts</string>
+  <string name="unselected_time_header">Time</string>
+  <string name="selected_attempts_header"><u>Attempts</u></string>
+  <string name="selected_time_header"><u>Time</u></string>
 
   <string name="date_time_combination_format">%1$s %2$s</string>
+  <string name="solution_time_format">%1$02d:%2$02d:%3$02d</string>
 
   <string-array name="emojis">
     <item>&#x1f600;</item> <!-- grinning face -->

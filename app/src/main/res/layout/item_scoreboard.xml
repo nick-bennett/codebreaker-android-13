@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/header_container"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:padding="@dimen/half_static_spacing">
+  android:paddingVertical="@dimen/half_static_spacing"
+  android:paddingHorizontal="@dimen/half_control_spacing">
 
   <TextView
     android:id="@+id/date_completed"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/half_static_spacing"
-    android:layout_weight="2"
+    android:layout_weight="3"
     android:textAlignment="viewStart"
     tools:text="07/16/2021 12:00"/>
 
@@ -23,8 +22,17 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/half_static_spacing"
-    android:layout_weight="1"
+    android:layout_weight="2"
     android:textAlignment="center"
     tools:text="12"/>
+
+  <TextView
+    android:id="@+id/time"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/half_static_spacing"
+    android:layout_weight="2"
+    android:textAlignment="viewEnd"
+    tools:text="01:23"/>
 
 </LinearLayout>

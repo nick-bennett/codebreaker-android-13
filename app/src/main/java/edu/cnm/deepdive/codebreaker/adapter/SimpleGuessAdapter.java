@@ -60,8 +60,8 @@ public class SimpleGuessAdapter extends RecyclerView.Adapter<Holder> {
     private void bind(int position) {
       Guess guess = guesses.get(position);
       binding.text.setText(guess.getText());
-      binding.matchResults.setText(
-          String.format(matchResultsFormat, guess.getExactMatches(), guess.getNearMatches()));
+      binding.exactMatches.setText(String.valueOf(guess.getExactMatches()));
+      binding.nearMatches.setText(String.valueOf(guess.getNearMatches()));
       binding.getRoot().setBackgroundColor(guess.isSolution() ? solution : Color.TRANSPARENT);
     }
 

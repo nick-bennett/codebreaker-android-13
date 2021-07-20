@@ -44,7 +44,6 @@ public class PlayFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = FragmentPlayBinding.inflate(inflater, container, false);
     binding.submit.setOnClickListener((v) -> {
-      // TODO Submit guess (from spinners) to viewmodel.
       StringBuilder builder = new StringBuilder();
       for (int i = 0; i < codeLength; i++) {
         String emoji = (String) spinners[i].getSelectedItem();
@@ -93,14 +92,15 @@ public class PlayFragment extends Fragment {
       }
     }
     if (game.isSolved()) {
-      binding.guessContainer.setVisibility(View.INVISIBLE);
-      binding.submit.setVisibility(View.INVISIBLE);
+      binding.guessContainer.setVisibility(View.GONE);
+      binding.submit.setVisibility(View.GONE);
     } else {
       binding.guessContainer.setVisibility(View.VISIBLE);
       binding.submit.setVisibility(View.VISIBLE);
     }
     SimpleGuessAdapter adapter = new SimpleGuessAdapter(getContext(), game.getGuesses());
     binding.guessList.setAdapter(adapter);
+    binding.guessList.scrollToPosition(adapter.getItemCount() - 1);
   }
 
   @Override

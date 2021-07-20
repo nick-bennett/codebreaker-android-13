@@ -31,14 +31,15 @@
     android:id="@+id/submit"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:src="@android:drawable/ic_menu_send"
+    android:src="@drawable/ic_send"
     android:contentDescription="@string/submit"
     android:tooltipText="@string/submit"
     android:visibility="invisible"
     android:background="?android:selectableItemBackgroundBorderless"
+    android:layout_marginEnd="@dimen/half_static_spacing"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="@id/guess_container"
     app:layout_constraintBottom_toBottomOf="@id/guess_container"
-    app:layout_constraintDimensionRatio="3:5"/>
+    app:layout_constraintDimensionRatio="1:2"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

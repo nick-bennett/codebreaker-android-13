@@ -3,6 +3,6 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:textSize="32sp"
+  android:textSize="@dimen/base_emoji_size"
   android:padding="@dimen/half_control_spacing"
   android:includeFontPadding="false"/>

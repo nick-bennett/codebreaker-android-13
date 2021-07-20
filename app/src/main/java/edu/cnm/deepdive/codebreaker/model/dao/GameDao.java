@@ -48,11 +48,29 @@ public interface GameDao {
   LiveData<GameWithGuesses> select(long gameId);
 
   @Transaction
-  @Query("SELECT g.* FROM game AS g "
-      + "INNER JOIN (SELECT game_id, COUNT(*) AS guess_count FROM guess GROUP BY game_id) AS s "
+  @Query("SELECT g.* "
+      + "FROM game AS g "
+      + "INNER JOIN ("
+      + "  SELECT game_id, COUNT(*) AS guess_count, MAX(created) AS created "
+      + "  FROM guess "
+      + "  GROUP BY game_id"
+      + ") AS s "
       + "ON g.game_id = s.game_id "
       + "WHERE g.length = :length AND g.pool_size = :poolSize and g.solved "
-      + "ORDER BY s.guess_count ASC")
-  LiveData<List<GameWithGuesses>> selectTopScores(int length, int poolSize);
+      + "ORDER BY s.guess_count ASC, (s.created - g.created) ASC")
+  LiveData<List<GameWithGuesses>> selectTopScoresByAttempts(int length, int poolSize);
+
+  @Transaction
+  @Query("SELECT g.* "
+      + "FROM game AS g "
+      + "INNER JOIN ("
+      + "  SELECT game_id, COUNT(*) AS guess_count, MAX(created) AS created "
+      + "  FROM guess "
+      + "  GROUP BY game_id"
+      + ") AS s "
+      + "ON g.game_id = s.game_id "
+      + "WHERE g.length = :length AND g.pool_size = :poolSize and g.solved "
+      + "ORDER BY (s.created - g.created) ASC, s.guess_count ASC")
+  LiveData<List<GameWithGuesses>> selectTopScoresByTime(int length, int poolSize);
 
 }

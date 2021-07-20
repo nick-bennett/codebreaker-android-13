@@ -32,6 +32,7 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
   private final LiveData<GameWithGuesses> game;
   private final MutableLiveData<Integer> codeLength;
   private final MutableLiveData<Integer> poolSize;
+  private final MutableLiveData<Boolean> sortedByTime;
   private final LiveData<List<GameWithGuesses>> scoreboard;
   private final MutableLiveData<Throwable> throwable;
   private final CompositeDisposable pending;
@@ -46,9 +47,12 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
     game = Transformations.switchMap(gameId, repository::get);
     codeLength = new MutableLiveData<>(getCodeLengthPref());
     poolSize = new MutableLiveData<>(getPoolSizePref());
-    ScoreboardFilterLiveData trigger = new ScoreboardFilterLiveData(codeLength, poolSize);
-    scoreboard = Transformations.switchMap(trigger, (pair) ->
-        repository.getScoreboard(pair.first, pair.second));
+    sortedByTime = new MutableLiveData<>(false);
+    ScoreboardFilterLiveData trigger =
+        new ScoreboardFilterLiveData(codeLength, poolSize, sortedByTime);
+    scoreboard = Transformations.switchMap(trigger, (params) -> params.sortedByTime
+        ? repository.getScoreboardTime(params.codeLength, params.poolSize)
+        : repository.getScoreboardAttempts(params.codeLength, params.poolSize));
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
     String[] emojis = application.getResources().getStringArray(R.array.emojis);
@@ -78,6 +82,14 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
 
   public void setPoolSize(int poolSize) {
     this.poolSize.setValue(poolSize);
+  }
+
+  public LiveData<Boolean> getSortedByTime() {
+    return sortedByTime;
+  }
+
+  public void setSortedByTime(boolean sortedByTime) {
+    this.sortedByTime.setValue(sortedByTime);
   }
 
   public LiveData<List<GameWithGuesses>> getScoreboard() {
@@ -148,11 +160,31 @@ public class GameViewModel extends AndroidViewModel implements LifecycleObserver
         .collect(Collectors.joining());
   }
 
-  private static class ScoreboardFilterLiveData extends MediatorLiveData<Pair<Integer, Integer>> {
+  private static class ScoreboardFilterLiveData extends MediatorLiveData<ScoreboardParams> {
 
-    public ScoreboardFilterLiveData(LiveData<Integer> codeLength, LiveData<Integer> poolSize) {
-      addSource(codeLength, (value) -> setValue(Pair.create(value, poolSize.getValue())));
-      addSource(poolSize, (value) -> setValue(Pair.create(codeLength.getValue(), value)));
+    @SuppressWarnings("ConstantConditions")
+    public ScoreboardFilterLiveData(
+        LiveData<Integer> codeLength, LiveData<Integer> poolSize, LiveData<Boolean> sortedByTime) {
+      addSource(codeLength, (length) ->
+          setValue(new ScoreboardParams(length, poolSize.getValue(), sortedByTime.getValue())));
+      addSource(poolSize, (size) ->
+          setValue(new ScoreboardParams(codeLength.getValue(), size, sortedByTime.getValue())));
+      addSource(sortedByTime, (flag) ->
+          setValue(new ScoreboardParams(codeLength.getValue(), poolSize.getValue(), flag)));
+    }
+
+  }
+
+  private static class ScoreboardParams {
+
+    private final int codeLength;
+    private final int poolSize;
+    private final boolean sortedByTime;
+
+    private ScoreboardParams(int codeLength, int poolSize, boolean sortedByTime) {
+      this.codeLength = codeLength;
+      this.poolSize = poolSize;
+      this.sortedByTime = sortedByTime;
     }
 
   }

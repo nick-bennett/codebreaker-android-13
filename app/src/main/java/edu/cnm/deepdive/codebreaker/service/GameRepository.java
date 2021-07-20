@@ -52,6 +52,17 @@ public class GameRepository {
     return gameDao.select(id);
   }
 
+  public Completable remove(Game game) {
+    return (
+        (game.getId() == 0)
+            ? Completable.complete()
+            : gameDao
+                .delete(game)
+                .ignoreElement()
+    )
+        .subscribeOn(Schedulers.io());
+  }
+
   public Single<Game> save(Game game, Guess guess) {
     return (
         (guess.getId() == 0)
@@ -82,19 +93,12 @@ public class GameRepository {
         .subscribeOn(Schedulers.io());
   }
 
-  public Completable remove(Game game) {
-    return (
-        (game.getId() == 0)
-            ? Completable.complete()
-            : gameDao
-                .delete(game)
-                .ignoreElement()
-    )
-        .subscribeOn(Schedulers.io());
+  public LiveData<List<GameWithGuesses>> getScoreboardAttempts(int codeLength, int poolSize) {
+    return gameDao.selectTopScoresByAttempts(codeLength, poolSize);
   }
 
-  public LiveData<List<GameWithGuesses>> getScoreboard(int codeLength, int poolSize) {
-    return gameDao.selectTopScores(codeLength, poolSize);
+  public LiveData<List<GameWithGuesses>> getScoreboardTime(int codeLength, int poolSize) {
+    return gameDao.selectTopScoresByTime(codeLength, poolSize);
   }
 
 }
