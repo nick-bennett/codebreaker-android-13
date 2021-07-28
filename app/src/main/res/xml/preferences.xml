@@ -20,6 +20,7 @@
     android:defaultValue="@integer/pool_size_pref_default"
     app:seekBarIncrement="@integer/pool_size_pref_increment"
     app:showSeekBarValue="true"
-    android:title="@string/pool_size_pref_title"/>
+    android:title="@string/pool_size_pref_title"
+    android:icon="@drawable/ic_encryption"/>
 
 </PreferenceScreen>
